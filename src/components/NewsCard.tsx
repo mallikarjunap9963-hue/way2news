@@ -27,7 +27,7 @@ export default function NewsCard({ article }: { article: Article }) {
 
   return (
     <div className="group bg-white rounded-xl shadow-md hover:shadow-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1">
-      {/* Image Container */}
+   
       <div className="relative h-52 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300">
         {article.urlToImage ? (
           <img
@@ -41,12 +41,11 @@ export default function NewsCard({ article }: { article: Article }) {
           </div>
         )}
 
-        {/* Source Badge */}
+   
         <div className="absolute top-3 left-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
           {article.source.name.substring(0, 15)}
         </div>
 
-        {/* Save Button */}
         <button
           onClick={handleSave}
           className="absolute top-3 right-3 text-2xl transition-all duration-200 hover:scale-125"
@@ -55,25 +54,24 @@ export default function NewsCard({ article }: { article: Article }) {
         </button>
       </div>
 
-      {/* Content */}
       <div className="p-5">
-        {/* Title */}
+
         <h3 className="font-bold text-base leading-tight text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
           {article.title}
         </h3>
 
-        {/* Description */}
+     
         <p className="text-sm text-gray-600 mb-4 line-clamp-2">
           {article.description || "No description available"}
         </p>
 
-        {/* Footer */}
+
         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
           <span className="text-xs text-gray-500 font-medium">
             {formatDate(article.publishedAt)}
           </span>
 
-          {/* Read More Link */}
+        
           <a
             href={article.url}
             target="_blank"

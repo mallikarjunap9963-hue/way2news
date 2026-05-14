@@ -1,8 +1,8 @@
 import type { Workspace } from "../types/news.types";
 
-// Mock API - in production this would be a real backend
+
 export const fetchWorkspacesFromAPI = async (): Promise<Workspace[]> => {
-  // Simulate API delay
+
   await new Promise(resolve => setTimeout(resolve, 500));
   
   return [

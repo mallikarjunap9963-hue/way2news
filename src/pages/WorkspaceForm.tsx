@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -14,9 +15,17 @@ const schema = z.object({
   dateFrom: z.string().min(1, "Start date is required"),
   dateTo: z.string().min(1, "End date is required"),
 }).refine((data) => {
-  const primary = data.primaryKeywords.toLowerCase().split(',').map(k => k.trim());
-  const excluded = data.excludedKeywords.toLowerCase().split(',').map(k => k.trim());
-  return !primary.some(p => excluded.includes(p));
+  const primary = data.primaryKeywords
+    .toLowerCase()
+    .split(",")
+    .map((k) => k.trim());
+
+  const excluded = data.excludedKeywords
+    .toLowerCase()
+    .split(",")
+    .map((k) => k.trim());
+
+  return !primary.some((p) => excluded.includes(p));
 }, {
   message: "Excluded keywords cannot include primary keywords",
   path: ["excludedKeywords"],
@@ -29,7 +38,13 @@ type FormData = z.infer<typeof schema>;
 
 export default function WorkspaceForm() {
   const navigate = useNavigate();
-  const addWorkspace = useAppStore((state) => state.addWorkspace);
+
+  const {
+    addWorkspace,
+    workspaces,
+  } = useAppStore();
+
+  const [duplicateError, setDuplicateError] = useState("");
 
   const {
     register,
@@ -40,33 +55,56 @@ export default function WorkspaceForm() {
   });
 
   const onSubmit = (data: FormData) => {
+    setDuplicateError("");
+
+    const keywords = data.primaryKeywords.trim().toLowerCase();
+
+    const existingWorkspace = workspaces.find(
+      (ws) =>
+        ws.primaryKeywords.trim().toLowerCase() === keywords
+    );
+
+    if (existingWorkspace) {
+      setDuplicateError(
+        "Primary keyword already exists. Please use different primary keywords."
+      );
+      return;
+    }
+
     const workspace: Workspace = {
       id: crypto.randomUUID(),
       ...data,
     };
+
     addWorkspace(workspace);
+
     navigate("/feed");
   };
 
   return (
     <div className="flex min-h-screen bg-slate-950">
       <Sidebar />
+
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-slate-900/70">
         <div className="relative w-full max-w-2xl">
           <div className="absolute inset-0 rounded-[32px] bg-slate-900/50 shadow-2xl" />
+
           <div className="relative rounded-[32px] border border-slate-800 bg-white p-8 shadow-2xl">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
                   New Smart Filter Workspace
                 </p>
+
                 <h2 className="mt-3 text-3xl font-bold text-slate-900">
-                  Create your first workspace
+                  Create Workspace
                 </h2>
+
                 <p className="mt-2 text-sm text-slate-500">
-                  Define the news stream logic and the app will fetch relevant stories instantly.
+                  Define the news stream logic and fetch relevant stories instantly.
                 </p>
               </div>
+
               <button
                 type="button"
                 onClick={() => navigate("/")}
@@ -76,45 +114,70 @@ export default function WorkspaceForm() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4"
+            >
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Title</label>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Title
+                </label>
+
                 <input
                   {...register("title")}
-                  placeholder="e.g. AI Research Tracker"
+                  placeholder="e.g. Sports Updates"
                   className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
                 />
-                {errors.title && <p className="mt-2 text-sm text-red-500">{errors.title.message}</p>}
-              </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Primary Keywords</label>
-                <input
-                  {...register("primaryKeywords")}
-                  placeholder="e.g. artificial intelligence, LLM, neural networks"
-                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
-                />
-                {errors.primaryKeywords && (
-                  <p className="mt-2 text-sm text-red-500">{errors.primaryKeywords.message}</p>
+                {errors.title && (
+                  <p className="mt-2 text-sm text-red-500">
+                    {errors.title.message}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Excluded Keywords</label>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Primary Keywords
+                </label>
+
                 <input
-                  {...register("excludedKeywords")}
-                  placeholder="e.g. elections, cricket, celebrities"
+                  {...register("primaryKeywords")}
+                  placeholder="e.g. cricket, football, tennis"
                   className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
                 />
+
+                {errors.primaryKeywords && (
+                  <p className="mt-2 text-sm text-red-500">
+                    {errors.primaryKeywords.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Excluded Keywords
+                </label>
+
+                <input
+                  {...register("excludedKeywords")}
+                  placeholder="e.g. politics, gossip, movies"
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                />
+
                 {errors.excludedKeywords && (
-                  <p className="mt-2 text-sm text-red-500">{errors.excludedKeywords.message}</p>
+                  <p className="mt-2 text-sm text-red-500">
+                    {errors.excludedKeywords.message}
+                  </p>
                 )}
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">Language</label>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Language
+                  </label>
+
                   <select
                     {...register("language")}
                     className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
@@ -125,34 +188,49 @@ export default function WorkspaceForm() {
                     <option value="fr">French</option>
                     <option value="de">German</option>
                   </select>
+
                   {errors.language && (
-                    <p className="mt-2 text-sm text-red-500">{errors.language.message}</p>
+                    <p className="mt-2 text-sm text-red-500">
+                      {errors.language.message}
+                    </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">Date Range</label>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Date Range
+                  </label>
+
                   <div className="grid gap-3 sm:grid-cols-2">
                     <input
                       {...register("dateFrom")}
                       type="date"
-                      title="Fetch news starting from this date"
                       className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
                     />
+
                     <input
                       {...register("dateTo")}
                       type="date"
-                      title="Fetch news up to this date"
                       className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
                     />
                   </div>
+
                   {(errors.dateFrom || errors.dateTo) && (
                     <p className="mt-2 text-sm text-red-500">
-                      {errors.dateFrom?.message || errors.dateTo?.message}
+                      {errors.dateFrom?.message ||
+                        errors.dateTo?.message}
                     </p>
                   )}
                 </div>
               </div>
+
+              {duplicateError && (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                  <p className="text-sm font-medium text-red-600">
+                    {duplicateError}
+                  </p>
+                </div>
+              )}
 
               <button
                 type="submit"
@@ -160,7 +238,6 @@ export default function WorkspaceForm() {
               >
                 Create Workspace
               </button>
-
             </form>
           </div>
         </div>

@@ -16,24 +16,40 @@ export default function FirstVisit() {
   }, [workspaces, navigate]);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen flex bg-gradient-to-br from-zinc-950 via-slate-900 to-zinc-950">
       <Sidebar />
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="text-center max-w-2xl">
-          <div className="mb-8">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              Create your first Workspace to start your news stream
+
+      <div className="flex-1 flex items-center justify-center px-6 relative overflow-hidden">
+
+        <div className="absolute w-[500px] h-[500px] bg-emerald-500/10 blur-3xl rounded-full"></div>
+
+        <div className="w-full max-w-3xl relative z-10">
+
+          <div className="bg-white/5 backdrop-blur-xl border border-emerald-400/10 rounded-3xl shadow-2xl p-12 text-center">
+
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+              Build your personal{" "}
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                News Workspace
+              </span>
             </h1>
+
+            <p className="text-slate-300 text-lg md:text-xl leading-relaxed mb-10">
+              Organize breaking news, trending topics, and personalized feeds
+              into one powerful workspace experience.
+            </p>
+
+            <button
+              onClick={() => navigate("/workspace/new")}
+              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-emerald-500/30"
+            >
+              + Add Workspace
+            </button>
 
           </div>
 
-          <button onClick={() => navigate("/workspace/new")} className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition">
-            + Add Workspace
-          </button>
-          
         </div>
       </div>
     </div>
-
   );
 }

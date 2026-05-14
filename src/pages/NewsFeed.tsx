@@ -58,19 +58,31 @@ export default function NewsFeed() {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar />
+
       <div className="flex-1 p-8">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            {activeWorkspace.title}
-          </h1>
-          <p className="text-gray-600">
-            {articles.length} articles • Latest news on{" "}
-            <span className="font-semibold text-blue-600">
-              {activeWorkspace.primaryKeywords.split(",")[0].trim()}
-            </span>
-          </p>
+        {/* ✅ Header with New Workspace Button */}
+        <header className="mb-8 flex items-start justify-between gap-6">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              {activeWorkspace.title}
+            </h1>
+            <p className="text-gray-600">
+              {articles.length} articles • Latest news on{" "}
+              <span className="font-semibold text-blue-600">
+                {activeWorkspace.primaryKeywords.split(",")[0].trim()}
+              </span>
+            </p>
+          </div>
+
+          <button
+            onClick={() => navigate("/workspace/new")}
+            className="flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold shadow hover:shadow-lg hover:bg-blue-700 transition"
+          >
+            + New Workspace
+          </button>
         </header>
 
+        {/* ✅ Articles Grid */}
         <section className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {newsQuery.isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
@@ -100,6 +112,7 @@ export default function NewsFeed() {
           )}
         </section>
 
+        {/* ✅ Load More */}
         {newsQuery.hasNextPage && (
           <div className="text-center mt-12">
             <button

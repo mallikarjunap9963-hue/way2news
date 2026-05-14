@@ -39,11 +39,16 @@ export const useAppStore = create<AppState>()(
         })),
 
       setActiveWorkspace: (id) =>
-        set(() => ({ activeWorkspaceId: id })),
+        set(() => ({
+          activeWorkspaceId: id,
+        })),
 
       deleteWorkspace: (id) =>
         set((state) => {
-          const updatedWorkspaces = state.workspaces.filter(ws => ws.id !== id);
+          const updatedWorkspaces = state.workspaces.filter(
+            (ws) => ws.id !== id
+          );
+
           const newActiveId =
             state.activeWorkspaceId === id
               ? updatedWorkspaces[0]?.id || null
@@ -56,31 +61,47 @@ export const useAppStore = create<AppState>()(
         }),
 
       setWorkspaces: (workspaces) =>
-        set(() => ({
+        set((state) => ({
           workspaces,
-          activeWorkspaceId: workspaces[0]?.id || null,
+          activeWorkspaceId:
+            state.activeWorkspaceId &&
+            workspaces.some(
+              (ws) => ws.id === state.activeWorkspaceId
+            )
+              ? state.activeWorkspaceId
+              : workspaces[0]?.id || null,
         })),
 
       saveArticle: (article) =>
         set((state) => ({
-          savedArticles: state.savedArticles.some(a => a.url === article.url)
+          savedArticles: state.savedArticles.some(
+            (a) => a.url === article.url
+          )
             ? state.savedArticles
             : [...state.savedArticles, article],
         })),
 
       removeArticle: (url) =>
         set((state) => ({
-          savedArticles: state.savedArticles.filter(a => a.url !== url),
+          savedArticles: state.savedArticles.filter(
+            (a) => a.url !== url
+          ),
         })),
 
       setIsInitialized: (value) =>
-        set(() => ({ isInitialized: value })),
+        set(() => ({
+          isInitialized: value,
+        })),
 
       setArticles: (articles) =>
-        set(() => ({ articles })),
+        set(() => ({
+          articles,
+        })),
 
       clearArticles: () =>
-        set(() => ({ articles: [] })),
+        set(() => ({
+          articles: [],
+        })),
     }),
     {
       name: 'news-app-storage',
