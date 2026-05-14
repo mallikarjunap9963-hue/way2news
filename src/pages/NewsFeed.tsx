@@ -60,7 +60,7 @@ export default function NewsFeed() {
       <Sidebar />
 
       <div className="flex-1 p-8">
-        {/* ✅ Header with New Workspace Button */}
+    
         <header className="mb-8 flex items-start justify-between gap-6">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
